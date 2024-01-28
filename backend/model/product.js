@@ -48,10 +48,6 @@ const productSchema = new mongoose.Schema({
   ratings: {
     type: Number,
   },
-  sold_out: {
-    type: Number,
-    default: 0,
-  },
   createdAt: {
     type: Date,
     default: Date.now(),

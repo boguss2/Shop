@@ -1,0 +1,223 @@
+http://localhost:8000/api/v2/order/create-order
+Cookie 
+token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YTU5MzZlMWQwZjcwMWFlYTg1ZmNkOCIsImlhdCI6MTcwNTg2MTYwNSwiZXhwIjoxNzA2NDY2NDA1fQ.zNJMjRu3UHMeC07P0ZizRHilrnH7GjlmroQFfOpobUA
+{
+  "_id": "65ad920e832aab58cb2bb0de",
+  "cart": [
+    {
+      "_id": "65a70fb89a4f4d762637b145",
+      "name": "12314141",
+      "description": "31231",
+      "category": "Accessories",
+      "price": 121,
+      "stock": 11,
+      "images": ["obraz_2024-01-17_002223698-1705447352789-512466275.png"],
+      "sold_out": 0,
+      "createdAt": "2024-01-16T23:15:53.263Z",
+      "reviews": [
+        {
+          "user": {
+            "_id": "65a85af111bccba23d9fd1a4",
+            "name": "ALEKSADER BOGDAN",
+            "email": "xd@pjwstk.edu.pl",
+            "role": "user",
+            "avatar": "OpethBlackwaterPark-1705532145531-536726905.png",
+            "createdAt": "2024-01-17T22:42:43.031Z",
+            "addresses": []
+          },
+          "rating": 5,
+          "comment": "Goat",
+          "productId": "65a70fb89a4f4d762637b145",
+          "createdAt": "2024-01-18T23:21:29.641Z",
+          "_id": "65a9b8e0d25338d7bbf895cb"
+        }
+      ]
+    }
+  ],
+  "shippingAddress": {
+    "address1": "1231",
+    "address2": "",
+    "zipCode": "1231",
+    "country": "AZ",
+    "city": "Balakhani"
+  },
+  "user": {
+    "_id": "65a5936e1d0f701aea85fcd8",
+    "name": "ALEKSADER BOGDAN",
+    "email": "s25867@pjwstk.edu.pl",
+    "role": "Admin",
+    "avatar": "4x-1705860428931-867747290.png",
+    "createdAt": "2024-01-15T19:33:02.923Z",
+    "addresses": [],
+    "phoneNumber": 123435873
+  },
+  "addresses": [],
+  "totalPrice": 131,
+  "status": "Processing",
+  "paymentInfo": {
+    "type": "Cash On Delivery",
+    "paidAt": "2024-01-21T21:13:49.881+00:00",
+    "createdAt": "2024-01-21T21:13:49.881+00:00",
+    "__v": 0
+  }
+}
+
+"/get-all-orders/:userId",
+http://localhost:8000/api/v2/order/get-all-orders/65a5936e1d0f701aea85fcd8
+
+http://localhost:8000/api/v2/order/update-order-status/65abec11c759899434f9167f
+
+{
+  "_id": "65ad920e832aab58cb2bb0de",
+  "cart": [
+    {
+      "_id": "65a70fb89a4f4d762637b145",
+      "name": "12314141",
+      "description": "31231",
+      "category": "Accessories",
+      "price": 121,
+      "stock": 11,
+      "images": ["obraz_2024-01-17_002223698-1705447352789-512466275.png"],
+      "sold_out": 0,
+      "createdAt": "2024-01-16T23:15:53.263Z",
+      "reviews": [
+        {
+          "user": {
+            "_id": "65a85af111bccba23d9fd1a4",
+            "name": "ALEKSADER BOGDAN",
+            "email": "xd@pjwstk.edu.pl",
+            "role": "user",
+            "avatar": "OpethBlackwaterPark-1705532145531-536726905.png",
+            "createdAt": "2024-01-17T22:42:43.031Z",
+            "addresses": []
+          },
+          "rating": 5,
+          "comment": "Goat",
+          "productId": "65a70fb89a4f4d762637b145",
+          "createdAt": "2024-01-18T23:21:29.641Z",
+          "_id": "65a9b8e0d25338d7bbf895cb"
+        }
+      ]
+    }
+  ],
+  "shippingAddress": {
+    "address1": "1231",
+    "address2": "",
+    "zipCode": "1231",
+    "country": "AZ",
+    "city": "Balakhani"
+  },
+  "user": {
+    "_id": "65a5936e1d0f701aea85fcd8",
+    "name": "ALEKSADER BOGDAN",
+    "email": "s25867@pjwstk.edu.pl",
+    "role": "Admin",
+    "avatar": "4x-1705860428931-867747290.png",
+    "createdAt": "2024-01-15T19:33:02.923Z",
+    "addresses": [],
+    "phoneNumber": 123435873
+  },
+  "addresses": [],
+  "totalPrice": 131,
+  "status": "Processing",
+  "paymentInfo": {
+    "type": "Cash On Delivery",
+    "paidAt": "2024-01-21T21:13:49.881+00:00",
+    "createdAt": "2024-01-21T21:13:49.881+00:00",
+    "__v": 0
+  }
+}
+
+http://localhost:8000/api/v2/order/get-all-orders
+
+http://localhost:8000/api/v2/product/create-product
+{
+  "name": "My Arms, Your Hearse",
+  "description": "To album, który przyniósł nieco większą agresję w porównaniu do poprzednich.",
+  "category": "Music and Gaming",
+  "price": 99,
+  "stock": 69,
+  "images": [
+    "obraz_2024-01-17_002311676-1705447399415-44315086.png",
+    "obraz_2024-01-17_002317905-1705447399416-359118679.png"
+  ],
+  "sold_out": 0,
+  "createdAt": "2024-01-16T23:15:53.263+00:00",
+  "__v": 2,
+  "ratings": 4
+}
+
+http://localhost:8000/api/v2/product/delete-product/65a70fe79a4f4d762637b14d
+
+http://localhost:8000/api/v2/product/create-new-review
+{
+  "comment": "",
+  "orderId": "65ad64aa313ff762e5ad37f4",
+  "productId": "65a711af9a4f4d762637b172",
+  "rating": null,
+  "user": {
+    "addresses": [],
+    "avatar": "4x-1705860428931-867747290.png",
+    "createdAt": "2024-01-15T19:33:02.923Z",
+    "email": "s25867@pjwstk.edu.pl",
+    "name": "ALEKSADER BOGDAN",
+    "phoneNumber": 123435873,
+    "role": "Admin",
+    "__v": 0,
+    "_id": "65a5936e1d0f701aea85fcd8"
+  }
+}
+
+http://localhost:8000/api/v2/product/admin-update-product/65a710159a4f4d762637b155
+{
+  "name": "My Arms, Your Hearse",
+  "description": "To album, który przyniósł nieco większą agresję w porównaniu do poprzednich.",
+  "category": "Music and Gaming",
+  "price": 99,
+  "stock": 69,
+  "images": [
+    "obraz_2024-01-17_002311676-1705447399415-44315086.png",
+    "obraz_2024-01-17_002317905-1705447399416-359118679.png"
+  ],
+  "sold_out": 0,
+  "createdAt": "2024-01-16T23:15:53.263+00:00",
+  "__v": 2,
+  "ratings": 4
+}
+
+PUT 
+http://localhost:8000/api/v2/product/65a710159a4f4d762637b155/review/65a9b472d25338d7bbf8957a
+{
+  "name": "My Arms, Your Hearse",
+  "description": "To album, który przyniósł nieco większą agresję w porównaniu do poprzednich.",
+  "category": "Music and Gaming",
+  "price": 99,
+  "stock": 69,
+  "images": [
+    "obraz_2024-01-17_002311676-1705447399415-44315086.png",
+    "obraz_2024-01-17_002317905-1705447399416-359118679.png"
+  ],
+  "sold_out": 0,
+  "createdAt": "2024-01-16T23:15:53.263+00:00",
+  "__v": 2,
+  "ratings": 4
+}
+
+http://localhost:8000/api/v2/product/all-products
+
+http://localhost:8000/api/v2/user/login-user
+{
+  "email": "olek.bogdan02@gmail.com",
+  "password": "1234"
+}
+
+http://localhost:8000/api/v2/user/getuser
+
+http://localhost:8000/api/v2/user/logout
+
+http://localhost:8000/api/v2/user/update-user-info
+{"_id":{"$oid":"65ada04483d9a0e7ac051e0f"},"name":"ALEKSADER BOGDAN","email":"olek.bogdan02@gmail.com","password":"1234","role":"user","avatar":"4x-1705250103186-386464987.png","createdAt":{"$date":{"$numberLong":"1705249946097"}},"addresses":[],"__v":{"$numberInt":"0"}}
+
+http://localhost:8000/api/v2/user/user-info/65a40d37a0cc092dae56f61d
+
+http://localhost:8000/api/v2/user/admin-all-users

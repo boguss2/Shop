@@ -13,20 +13,24 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 router.post("/create-user", upload.single("file"), async (req, res, next) => {
   const { name, email, password } = req.body;
   const userEmail = await User.findOne({ email });
-
   if (userEmail) {
-    const filename = req.file.filename;
-    const filePath = `uploads/${filename}`;
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ message: "Error deleting file" });
-      }
-    });
+    const filename = req.file ? req.file.filename : null;
+    if (filename) {
+      const filePath = `uploads/${filename}`;
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ message: "Error deleting file" });
+        }
+      });
+    }
     return next(new ErrorHandler("User already exists", 400));
   }
 
-  const filename = req.file.filename;
+  const filename = req.file ? req.file.filename : null;
+  if (!filename) {
+    return next(new ErrorHandler("No file received", 400));
+  }
   const fileUrl = path.join(filename);
   const user = {
     name,
@@ -43,6 +47,7 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
   });
 });
 
+//login user
 router.post(
   "/login-user",
   catchAsyncErrors(async (req, res, next) => {
@@ -73,7 +78,6 @@ router.post(
     }
   })
 );
-
 
 //load user
 router.get(
@@ -160,23 +164,23 @@ router.put(
 router.put(
   "/update-avatar",
   isAuthenticated,
+  upload.single("file"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       let existsUser = await User.findById(req.user.id);
-      if (req.body.avatar !== "") {
-        const imageId = existsUser.avatar.public_id;
+      if (req.file) {
+        const filename = req.file.filename;
+        const filePath = `uploads/${filename}`;
 
-        await cloudinary.v2.uploader.destroy(imageId);
-
-        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-          folder: "avatars",
-          width: 150,
+        // Delete the old avatar file
+        fs.unlink(`uploads/${existsUser.avatar}`, (err) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json({ message: "Error deleting file" });
+          }
         });
 
-        existsUser.avatar = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+        existsUser.avatar = filename;
       }
 
       await existsUser.save();
@@ -191,109 +195,10 @@ router.put(
   })
 );
 
-// update user addresses
-router.put(
-  "/update-user-addresses",
-  isAuthenticated,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const user = await User.findById(req.user.id);
-
-      const sameTypeAddress = user.addresses.find(
-        (address) => address.addressType === req.body.addressType
-      );
-      if (sameTypeAddress) {
-        return next(
-          new ErrorHandler(`${req.body.addressType} address already exists`)
-        );
-      }
-
-      const existsAddress = user.addresses.find(
-        (address) => address._id === req.body._id
-      );
-
-      if (existsAddress) {
-        Object.assign(existsAddress, req.body);
-      } else {
-        // add the new address to the array
-        user.addresses.push(req.body);
-      }
-
-      await user.save();
-
-      res.status(200).json({
-        success: true,
-        user,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
-// delete user address
-router.delete(
-  "/delete-user-address/:id",
-  isAuthenticated,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const userId = req.user._id;
-      const addressId = req.params.id;
-
-      await User.updateOne(
-        {
-          _id: userId,
-        },
-        { $pull: { addresses: { _id: addressId } } }
-      );
-
-      const user = await User.findById(userId);
-
-      res.status(200).json({ success: true, user });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
-// update user password
-router.put(
-  "/update-user-password",
-  isAuthenticated,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const user = await User.findById(req.user.id).select("+password");
-
-      const isPasswordMatched = await user.comparePassword(
-        req.body.oldPassword
-      );
-
-      if (!isPasswordMatched) {
-        return next(new ErrorHandler("Old password is incorrect!", 400));
-      }
-
-      if (req.body.newPassword !== req.body.confirmPassword) {
-        return next(
-          new ErrorHandler("Password doesn't matched with each other!", 400)
-        );
-      }
-      user.password = req.body.newPassword;
-
-      await user.save();
-
-      res.status(200).json({
-        success: true,
-        message: "Password updated successfully!",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
 // find user information with the userId
 router.get(
   "/user-info/:id",
+  isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.params.id);

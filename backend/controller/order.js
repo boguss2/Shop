@@ -4,15 +4,43 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
-const Product = require("../model/product");
 
-// create new order
+const validateCreateOrder = (req, res, next) => {
+  const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
+
+  if (!cart || !Array.isArray(cart) || cart.length === 0) {
+    return next(new ErrorHandler("Invalid cart data", 400));
+  }
+
+  if (!shippingAddress || typeof shippingAddress !== "object") {
+    return next(new ErrorHandler("Invalid shipping address", 400));
+  }
+
+  if (!user || typeof user !== "object" || !user._id) {
+    return next(new ErrorHandler("Invalid user data", 400));
+  }
+
+  if (isNaN(totalPrice) || totalPrice <= 0) {
+    return next(new ErrorHandler("Invalid total price", 400));
+  }
+
+  if (!paymentInfo || typeof paymentInfo !== "object") {
+    return next(new ErrorHandler("Invalid payment information", 400));
+  }
+
+  next();
+};
+
+
 router.post(
   "/create-order",
   isAuthenticated,
+  validateCreateOrder,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
+
+      const orders = [];
 
       const order = await Order.create({
         cart,
@@ -22,9 +50,11 @@ router.post(
         paymentInfo,
       });
 
+      orders.push(order);
+
       res.status(201).json({
         success: true,
-        order,
+        orders,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -32,7 +62,7 @@ router.post(
   })
 );
 
-// get all orders of user
+
 router.get(
   "/get-all-orders/:userId",
   isAuthenticated,
@@ -52,11 +82,10 @@ router.get(
   })
 );
 
-// update order status for admin
 router.put(
   "/update-order-status/:id",
   isAuthenticated,
-  isAdmin,
+  isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
@@ -84,11 +113,10 @@ router.put(
   })
 );
 
-// all orders --- for admin
 router.get(
-  "/admin-all-orders",
+  "/get-all-orders",
   isAuthenticated,
-  isAdmin,
+  isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orders = await Order.find().sort({

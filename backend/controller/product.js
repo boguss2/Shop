@@ -7,14 +7,20 @@ const Order = require("../model/order");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { upload } = require("../multer");
 
-// create product by admin
 router.post(
   "/create-product",
+  isAuthenticated,
+  isAdmin("Admin"),
   upload.array("images"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const files = req.files;
-      const imageUrls = files.map((file) => `${file.filename}`);
+      let imageUrls = [];
+
+      if (files) {
+        imageUrls = files.map((file) => `${file.filename}`);
+      }
+
       const productData = req.body;
       productData.images = imageUrls;
 
@@ -34,22 +40,27 @@ router.post(
 router.delete(
   "/delete-product/:id",
   isAuthenticated,
-  isAdmin,
+  isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
+    console.log('Inside delete product route handler');
     try {
       const product = await Product.findById(req.params.id);
-
+      console.log('Found product:', product);
+    
       if (!product) {
         return next(new ErrorHandler("Product is not found with this id", 404));
       }
 
-      await product.remove();
+      console.log('About to delete product:', product);
+      await Product.deleteOne({ _id: req.params.id });
+      console.log('Product deleted successfully');
 
       res.status(201).json({
         success: true,
         message: "Product Deleted successfully!",
       });
     } catch (error) {
+      console.error('Error occurred while deleting product:', error);
       return next(new ErrorHandler(error, 400));
     }
   })
@@ -61,12 +72,17 @@ router.put(
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { rating, comment, productId, orderId } = req.body;
+      const { user, rating, comment, productId, orderId } = req.body;
 
       const product = await Product.findById(productId);
 
+
+      if (!product) {
+        return next(new ErrorHandler(`This product has been removed from the store`, 404));
+      }
+      
       const review = {
-        user: req.user._id,
+        user,
         rating,
         comment,
         productId,
@@ -112,11 +128,82 @@ router.put(
   })
 );
 
-// all products --- for admin
-router.get(
-  "/admin-all-products",
+// update product by admin
+router.put(
+  "/admin-update-product/:id",
   isAuthenticated,
   isAdmin("Admin"),
+  upload.array("images"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      let product = await Product.findById(req.params.id);
+
+      if (!product) {
+        return next(new ErrorHandler("Product not found", 404));
+      }
+
+      const files = req.files;
+      let imageUrls = [];
+
+      if (files) {
+        imageUrls = files.map((file) => `${file.filename}`);
+      }
+
+      const productData = req.body;
+      productData.images = imageUrls;
+
+      product = await Product.findByIdAndUpdate(req.params.id, { $set: productData }, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+      });
+
+      res.status(200).json({
+        success: true,
+        product,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// Remove a review
+router.put(
+  "/:productId/review/:reviewId",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      let product = await Product.findById(req.params.productId);
+
+      if (!product) {
+        return next(new ErrorHandler("Product not found", 404));
+      }
+
+      // Find the review in the product's reviews array and remove it
+      const reviewIndex = product.reviews.findIndex(review => review._id.toString() === req.params.reviewId);
+      if (reviewIndex === -1) {
+        return next(new ErrorHandler("Review not found", 404));
+      }
+      product.reviews.splice(reviewIndex, 1);
+
+      // Save the product with the updated reviews array
+      product = await product.save();
+
+      res.status(200).json({
+        success: true,
+        product,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// all products
+router.get(
+  "/all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const products = await Product.find().sort({
