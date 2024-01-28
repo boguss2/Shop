@@ -1,29 +1,29 @@
 import React from "react";
-import { AiOutlineGift } from "react-icons/ai";
-import { BiMessageSquareDetail } from "react-icons/bi";
-import { FiPackage, FiShoppingBag } from "react-icons/fi";
-import { MdOutlineLocalOffer } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { backend_url } from "../../../server";
+import { useBackendServer } from "../../../contexts/BackendContext";
 
 const AdminHeader = () => {
   const { user } = useSelector((state) => state.user);
+  const backend = useBackendServer();
 
   return (
     <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
         <Link to="/">
           <img
-            src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+            className="logo"
+            src={`${backend.uploads}/logo.png`}
             alt=""
+            width="150"
+            height="36"
           />
         </Link>
       </div>
       <div className="flex items-center">
         <div className="flex items-center mr-4">
           <img
-            src={user ? `${backend_url}${user.avatar}` : ""}
+            src={user ? `${backend.uploads}${user.avatar}` : ""}
             alt=""
             className="w-[50px] h-[50px] rounded-full object-cover"
           />

@@ -1,15 +1,35 @@
 import React from "react";
 import { FiShoppingBag } from "react-icons/fi";
 import { RxDashboard } from "react-icons/rx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { BsHandbag } from "react-icons/bs";
-import { AiOutlineSetting, AiOutlineFolderAdd } from "react-icons/ai";
+import { AiOutlineFolderAdd } from "react-icons/ai";
+import { AiOutlineLogin } from "react-icons/ai";
+import axios from "axios";
+import { useBackendServer } from "../../../contexts/BackendContext";
+import { toast } from "react-toastify";
+import { RxPerson } from "react-icons/rx";
+import { MdOutlineRateReview } from "react-icons/md";
 
 const AdminSideBar = ({ active }) => {
+  const navigate = useNavigate();
+  const backend = useBackendServer();
+
+  const logoutHandler = () => {
+    axios
+      .get(`${backend.api}/user/logout`, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+        window.location.reload(true);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
+      });
+  };
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
-      {/* single item */}
       <div className="w-full flex items-center p-4">
         <Link to="/admin/dashboard" className="w-full flex items-center">
           <RxDashboard
@@ -59,11 +79,8 @@ const AdminSideBar = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link
-          to="/admin-create-product"
-          className="w-full flex items-center"
-        >
-          <AiOutlineFolderAdd
+        <Link to="/admin-reviews" className="w-full flex items-center">
+          <MdOutlineRateReview
             size={30}
             color={`${active === 4 ? "crimson" : "#555"}`}
           />
@@ -72,7 +89,7 @@ const AdminSideBar = ({ active }) => {
               active === 4 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
-            Create Product
+            All Reviews
           </h5>
         </Link>
       </div>
@@ -91,8 +108,8 @@ const AdminSideBar = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/profile" className="w-full flex items-center">
-          <AiOutlineSetting
+        <Link to="/admin-create-product" className="w-full flex items-center">
+          <AiOutlineFolderAdd
             size={30}
             color={`${active === 6 ? "crimson" : "#555"}`}
           />
@@ -101,9 +118,37 @@ const AdminSideBar = ({ active }) => {
               active === 6 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
+            Create Product
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
+        <Link to="/profile" className="w-full flex items-center">
+          <RxPerson size={30} color={`${active === 7 ? "crimson" : "#555"}`} />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 7 ? "text-[crimson]" : "text-[#555]"
+            }`}
+          >
             Back to User Profile
           </h5>
         </Link>
+      </div>
+      <div className="w-full flex items-center p-4">
+        <button className="w-full flex items-center" onClick={logoutHandler}>
+          <AiOutlineLogin
+            size={30}
+            color={`${active === 8 ? "crimson" : "#555"}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 8 ? "text-[crimson]" : "text-[#555]"
+            }`}
+          >
+            Log out
+          </h5>
+        </button>
       </div>
     </div>
   );

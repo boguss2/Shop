@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ isAuthenticated,children }) => {
     if (!isAuthenticated) {
+      console.log("Not authenticated");
       return <Navigate to="/login" replace />;
     }
     return children;

@@ -12,13 +12,17 @@ export const adminAllOrdersFailed = createAction("adminAllOrdersFailed");
 
 // get all orders of user
 export const getAllOrdersOfUser = (userId) => async (dispatch) => {
+  // Inside getAllOrdersOfUser action
   try {
     dispatch(getAllOrdersUserRequest());
 
     const { data } = await axios.get(
-      `${server}/order/get-all-orders/${userId}`
+      `${server}/order/get-all-orders/${userId}`,
+      {
+        withCredentials: true,
+      }
     );
-
+    console.log("Orders data received in action:", data.orders); // Log the received data
     dispatch(getAllOrdersUserSuccess(data.orders));
   } catch (error) {
     dispatch(getAllOrdersUserFailed(error.response.data.message));
@@ -30,7 +34,11 @@ export const getAllOrdersOfAdmin = () => async (dispatch) => {
   try {
     dispatch(adminAllOrdersRequest());
 
-    const { data } = await axios.get(`${server}/order/get-all-orders`);
+    const { data } = await axios.get(`${server}/order/get-all-orders`, {
+      withCredentials: true,
+    });
+    console.log("Orders data received in action:", data.orders); // Log the received data
+
     dispatch(adminAllOrdersSuccess(data.orders));
   } catch (error) {
     dispatch(adminAllOrdersFailed(error.response.data.message));

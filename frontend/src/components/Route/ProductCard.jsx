@@ -1,78 +1,77 @@
-import React from "react";
-import {
-    AiFillStar,
-    AiOutlineEye,
-    AiOutlineShoppingCart,
-  } from "react-icons/ai";
+import React, { useMemo } from "react";
+import { AiOutlineEye, AiOutlineShoppingCart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import ProductDetailsCard from "./ProductDetailCard";
-import styles from "../../styles/styles";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/actions/cart";
+import { toast } from "react-toastify";
+import Ratings from "../Ratings";
+import { useBackendServer } from "../../contexts/BackendContext";
 
 const ProductCard = ({ data }) => {
-  const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
+  const { cart } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const backend = useBackendServer();
+  const [count] = useState(1);
 
-  const d = data.name;
-  const product_name = d.replace(/\s+/g, "-");
+  const imageUrl = useMemo(() => {
+    return `${backend.uploads}/${data.images[0]}`;
+  }, [backend, data.images]);
+
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
+      toast.error("Item already in cart!");
+    } else {
+      if (data.stock < 1) {
+        toast.error("Product stock limited!");
+      } else {
+        const cartData = { ...data, qty: count };
+        dispatch(addToCart(cartData));
+        toast.success("Item added to cart successfully!");
+      }
+    }
+  };
 
   return (
     <>
-      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
+      <div className="w-full h-[400px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
-        <Link to={`/product/${product_name}`}>
+        <Link to={`/product/${data._id}`}>
           <img
-            src={data.image_Url[0].url}
+            src={imageUrl}
             alt=""
             className="w-full h-[170px] object-contain"
           />
         </Link>
-        <Link to={`/`}>
-          <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
-        </Link>
-        <Link to={`/product/${product_name}`}>
-          <h4 className="pb-3 font-[500]">
+        <Link to={`/product/${data._id}`}>
+          <h4 className="pb-3 font-[500] text-center">
             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
           </h4>
-
-          <div className="flex">
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-          </div>
-          <div className="py-2 flex items-center justify-between">
+          <p className="text-center text-sm">
+            {data.description ? data.description.split(".")[0] : null}
+          </p>
+          <div className="flex justify-center">
             <div className="flex">
-              <h4 className={`${styles.productDiscountPrice}`}>
-              {data.price ? data.price + " $" : null}
-              </h4>
+              <Ratings rating={data.ratings} />
+            </div>
+          </div>
+          <div className="p-4 flex items-center justify-evenly">
+            <div className="flex">
+              <h4 className="price">{data.price ? data.price : null}</h4>
+            </div>
+            <div className="flex">
+              <p className="stock text-green-400">
+                {data.stock ? `Stock: ${data.stock}` : null}
+              </p>
             </div>
           </div>
         </Link>
 
         <div>
-        <AiOutlineEye
+          <AiOutlineEye
             size={22}
             className="cursor-pointer absolute right-2 top-14"
             onClick={() => setOpen(!open)}
@@ -82,7 +81,7 @@ const ProductCard = ({ data }) => {
           <AiOutlineShoppingCart
             size={25}
             className="cursor-pointer absolute right-2 top-24"
-            onClick={() => setOpen(!open)}
+            onClick={() => addToCartHandler(data._id)}
             color="#444"
             title="Add to cart"
           />

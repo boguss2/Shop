@@ -1,9 +1,9 @@
 import { React, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../styles/styles";
+import "../styles/styles.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { server } from "../server";
+import { useBackendServer } from "../contexts/BackendContext";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -11,13 +11,14 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const backend = useBackendServer();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     await axios
       .post(
-        `${server}/user/login-user`,
+        `${backend.api}/user/login-user`,
         {
           email,
           password,
@@ -95,30 +96,6 @@ const Login = () => {
                 )}
               </div>
             </div>
-            <div className={`${styles.noramlFlex} justify-between`}>
-              <div className={`${styles.noramlFlex}`}>
-                <input
-                  type="checkbox"
-                  name="remember-me"
-                  id="remember-me"
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  Remember me
-                </label>
-              </div>
-              <div className="text-sm">
-                <a
-                  href=".forgot-password"
-                  className="font-medium text-green-600 hover:text-green-500"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
             <div>
               <button
                 type="submit"
@@ -127,7 +104,7 @@ const Login = () => {
                 Submit
               </button>
             </div>
-            <div className={`${styles.noramlFlex} w-full`}>
+            <div className="noramlFlex w-full">
               <h4>Not have any account?</h4>
               <Link to="/sign-up" className="text-green-600 pl-2">
                 Sign Up

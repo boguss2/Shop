@@ -24,12 +24,13 @@ export const createProduct = (productData) => async (dispatch) => {
     dispatch(productCreateRequest());
 
     const { data } = await axios.post(
-      `${server}/product/create-product`,
+      `${server}/product/create-product`, 
       productData,
       {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        withCredentials: true,
       }
     );
 
@@ -38,14 +39,22 @@ export const createProduct = (productData) => async (dispatch) => {
     dispatch(productCreateFail(error.response.data.message));
   }
 };
+
 // get all products
 export const getAllProducts = () => async (dispatch) => {
   try {
+    console.log('Dispatching getAllProductsRequest');
     dispatch(getAllProductsRequest());
 
-    const { data } = await axios.get(`${server}/product/get-all-products`);
+    console.log('Sending GET request to server');
+    const { data } = await axios.get(`${server}/product/all-products`, {
+      withCredentials: true,
+    });
+
+    console.log('Received response from server:', data);
     dispatch(getAllProductsSuccess(data.products));
   } catch (error) {
+    console.error('Error occurred:', error.response.data.message);
     dispatch(getAllProductsFailed(error.response.data.message));
   }
 };

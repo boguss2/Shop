@@ -1,9 +1,9 @@
 import { React, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../styles/styles";
+import "../styles/styles.css";
 import { Link } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
-import { server } from "../server";
+import { useBackendServer } from "../contexts/BackendContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -13,6 +13,7 @@ const Singup = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const backend = useBackendServer();
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
@@ -53,7 +54,7 @@ const Singup = () => {
 
     try {
       const response = await axios.post(
-        `${server}/user/create-user`,
+        `${backend.api}/user/create-user`,
         newForm,
         config
       );
@@ -200,7 +201,7 @@ const Singup = () => {
                 Submit
               </button>
             </div>
-            <div className={`${styles.noramlFlex} w-full`}>
+            <div className='noramlFlex w-full'>
               <h4>Already have an account?</h4>
               <Link to="/login" className="text-green-600 pl-2">
                 Sign In

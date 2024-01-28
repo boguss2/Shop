@@ -21,6 +21,7 @@ export const orderReducer = createReducer(initialState, (builder) => {
       state.isLoading = false;
       state.userOrders = action.payload;
     })
+    
     .addCase(getAllOrdersUserFailed, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;

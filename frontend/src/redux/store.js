@@ -7,7 +7,7 @@ import { orderReducer } from "./reducers/order";
 const Store = configureStore({
   reducer: {
     user: userReducer,
-    products: productReducer,
+    product: productReducer,
     cart: cartReducer,
     order: orderReducer,
   },

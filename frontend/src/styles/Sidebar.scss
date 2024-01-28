@@ -1,0 +1,61 @@
+$primary-color: white;
+$secondary-color: #3D2217;
+$admin: #DADB34;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin full-width {
+  width: 100%;
+}
+
+@mixin box-shadow {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+@mixin padding($top: 1rem, $right: 1rem, $bottom: 1rem, $left: 1rem) {
+  padding: $top $right $bottom $left;
+}
+
+@mixin margin-bottom($size: 2rem) {
+  margin-bottom: $size;
+}
+
+.all-style {
+  text-align: center;
+  font-size: (70px + 50 - 200 / 4 * 2 );
+}
+
+.navContainer {
+  @extend .all-style;
+  background-color: $primary-color;
+  @include full-width;
+  @include box-shadow;
+  border-radius: 10px;
+  @include padding(2rem, 1rem, 1rem, 1rem);
+}
+
+.navButton {
+  @extend .all-style;
+  @include flex-center;
+  cursor: pointer;
+  @include full-width;
+  @include margin-bottom;
+  border: 2px solid $secondary-color;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: darken($primary-color, 10%);
+  }
+
+  &.active {
+    span {
+      color: crimson;
+    }
+  }
+  span {
+    padding-left: 3px;
+  }
+}

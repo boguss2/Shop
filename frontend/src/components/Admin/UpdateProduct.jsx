@@ -1,34 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { createProduct } from "../../redux/actions/product";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
+import { useBackendServer } from "../../contexts/BackendContext";
 
-const CreateProduct = () => {
-  const { success, error } = useSelector((state) => state.product);
+const UpdateProduct = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const state = useSelector((state) => state);
-  console.log(state);
   const [images, setImages] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-    if (success) {
-      toast.success("Product created successfully!");
-      navigate("/admin-products");
-      window.location.reload();
-    }
-  }, [dispatch, error, navigate, success]);
+  const backend = useBackendServer();
 
   const handleImageChange = (e) => {
     e.preventDefault();
@@ -40,23 +27,46 @@ const CreateProduct = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (
+      name === "" &&
+      description === "" &&
+      category === "" &&
+      price === "" &&
+      stock === "" &&
+      images.length === 0
+    ) {
+      toast.error("At least one field must be changed.");
+      return;
+    }
+
     const newForm = new FormData();
 
     images.forEach((image) => {
       newForm.append("images", image);
     });
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("price", price);
-    newForm.append("stock", stock);
-    dispatch(createProduct(newForm));
+    if (name !== "") newForm.append("name", name);
+    if (description !== "") newForm.append("description", description);
+    if (category !== "") newForm.append("category", category);
+    if (price !== "") newForm.append("price", price);
+    if (stock !== "") newForm.append("stock", stock);
+
+    axios
+      .put(`${backend.api}/product/admin-update-product/${id}`, newForm, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        toast.success("Product updated successfully!");
+        navigate("/admin-products");
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      });
   };
 
   return (
     <div className="w-full flex justify-center">
       <div className="w-[90%] 800px:w-[50%] bg-white shadow h-[90vh] rounded-[4px] p-3 overflow-y-scroll">
-        <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
+        <h5 className="text-[30px] font-Poppins text-center">Update Product</h5>
         <form onSubmit={handleSubmit}>
           <br />
           <div>
@@ -79,7 +89,6 @@ const CreateProduct = () => {
             </label>
             <textarea
               cols="30"
-              required
               rows="8"
               type="text"
               name="description"
@@ -167,7 +176,7 @@ const CreateProduct = () => {
             <div>
               <input
                 type="submit"
-                value="Create"
+                value="Update"
                 className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -178,4 +187,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default UpdateProduct;
